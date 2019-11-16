@@ -21,12 +21,12 @@ public:
     ~NeoM8N();
     void RegisterCallback(const std::string& key, GPSCallback cb);
     void UnregisterCallback(const std::string& key);
-    void Capture();
+    void Read();
 private:
     int fd;
     std::map<std::string, GPSCallback> cbs;
     struct termios oldPortSettings{}, newPortSettings{};
-    bool capture;
+    bool reading;
 };
 
 #endif //NEOM8N_NEOM8N_H

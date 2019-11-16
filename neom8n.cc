@@ -9,7 +9,7 @@ using std::string;
 using std::exception;
 
 NeoM8N::NeoM8N(const std::string& device) {
-    capture = false;
+    reading = false;
     /*
       Open modem device for reading and writing and not as controlling tty
       because we don't want to get killed if linenoise sends CTRL-C.
@@ -89,11 +89,12 @@ void NeoM8N::UnregisterCallback(const std::string& key) {
     cbs.erase(key);
 }
 
-void NeoM8N::Capture() {
+void NeoM8N::Read() {
     int res;
     char buf[4096];
+    reading = true;
     while (true) {
-        if (!capture) {
+        if (!reading) {
             return;
         }
         res = read(fd, buf, 4096);
@@ -106,6 +107,9 @@ void NeoM8N::Capture() {
                 return;
             }
         }
+        if (res == 0) {
+            continue;
+        }
         /* set end of string, so we can printf */
         buf[res]=0;
         for (auto const& v : cbs) {
@@ -116,7 +120,7 @@ void NeoM8N::Capture() {
 
 NeoM8N::~NeoM8N() {
     /* stop capturing */
-    capture = false;
+    reading = false;
     /* restore the old port settings */
     tcsetattr(fd, TCSANOW, &oldPortSettings);
     /* close the port */
