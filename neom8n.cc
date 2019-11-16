@@ -97,6 +97,7 @@ void NeoM8N::Read() {
         if (!reading) {
             return;
         }
+        memset(buf, 0, sizeof(buf));
         res = read(fd, buf, 4096);
         if (res == -1) {
             if  (errno == EAGAIN) {
@@ -108,6 +109,9 @@ void NeoM8N::Read() {
             }
         }
         if (res == 0) {
+            continue;
+        }
+        if (buf[0] != '$') {
             continue;
         }
         /* set end of string, so we can printf */
