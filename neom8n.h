@@ -16,111 +16,114 @@
 
 using std::string;
 
-typedef std::function<void(char *data)> GPSCallback;
+namespace neom8n {
 
-#define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
-#define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
-#define GGA_REGEX "[$]([A-Z]{2})GGA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0126])*,([0-9]{2}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,M*,([0-9]+[.][0-9]+)*,(.*),(.*)[*][0-9A-Fa-f]+$"
-#define VTG_REGEX "[$]([A-Z]{2})VTG,([0-9]+[.][0-9]+)*,T*,(.*),M*,([0-9]+[.][0-9]+)*,N*,([0-9]+[.][0-9]+)*,K*,([NEAD])*[*][0-9A-Fa-f]+$"
-#define GSV_REGEX "[$]([A-Z]{2})GSV,([0-9]+)*,([0-9]+)*,([0-9]+)*((?:,[0-9]+,[0-9]*,[0-9]*,[0-9]*){0,4})(?:,([0-9]*))*[*][0-9A-Fa-f]+$"
-#define GSV_SATELLITE_DATA_REGEX ",([0-9]+)*,([0-9]+)*,([0-9]+)*,([0-9]*)*"
-#define GLL_REGEX "[$]([A-Z]{2})GLL,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([AV])*,([NEAD])*[*][0-9A-Fa-f]+$"
-#define ZDA_REGEX "[$]([A-Z]{2})ZDA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]{2})*,([0-9]{2})*,([0-9]{4})*,([-]*[0-9]{2})*,([0-9]{2})*[*][0-9A-Fa-f]+$"
-#define TXT_REGEX "[$]([A-Z]{2})TXT,([0-9][0-9])*,([0-9][0-9])*,([0-9][0-9])*,(.*)[*][0-9A-Fa-f]+$"
-#define RMC_REGEX "[$]([A-Z]{2})RMC,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([VA]),([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]{2}[0-9]{2}[0-9]{2})*,,,([NEAD])*(?:,([AV]))*[*][0-9A-Fa-f]+$"
-#define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
-#define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
+    typedef std::function<void(char *data)> GPSCallback;
 
-class InvalidSentenceTypeError : public std::exception {
-    virtual const char *what() const noexcept override;
-};
+    #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
+    #define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
+    #define GGA_REGEX "[$]([A-Z]{2})GGA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0126])*,([0-9]{2}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,M*,([0-9]+[.][0-9]+)*,(.*),(.*)[*][0-9A-Fa-f]+$"
+    #define VTG_REGEX "[$]([A-Z]{2})VTG,([0-9]+[.][0-9]+)*,T*,(.*),M*,([0-9]+[.][0-9]+)*,N*,([0-9]+[.][0-9]+)*,K*,([NEAD])*[*][0-9A-Fa-f]+$"
+    #define GSV_REGEX "[$]([A-Z]{2})GSV,([0-9]+)*,([0-9]+)*,([0-9]+)*((?:,[0-9]+,[0-9]*,[0-9]*,[0-9]*){0,4})(?:,([0-9]*))*[*][0-9A-Fa-f]+$"
+    #define GSV_SATELLITE_DATA_REGEX ",([0-9]+)*,([0-9]+)*,([0-9]+)*,([0-9]*)*"
+    #define GLL_REGEX "[$]([A-Z]{2})GLL,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([AV])*,([NEAD])*[*][0-9A-Fa-f]+$"
+    #define ZDA_REGEX "[$]([A-Z]{2})ZDA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]{2})*,([0-9]{2})*,([0-9]{4})*,([-]*[0-9]{2})*,([0-9]{2})*[*][0-9A-Fa-f]+$"
+    #define TXT_REGEX "[$]([A-Z]{2})TXT,([0-9][0-9])*,([0-9][0-9])*,([0-9][0-9])*,(.*)[*][0-9A-Fa-f]+$"
+    #define RMC_REGEX "[$]([A-Z]{2})RMC,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([VA]),([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]{2}[0-9]{2}[0-9]{2})*,,,([NEAD])*(?:,([AV]))*[*][0-9A-Fa-f]+$"
+    #define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
+    #define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
 
-class NoMatchingSentenceTypeError : public std::exception {
-    virtual const char *what() const noexcept override;
-};
+    class InvalidSentenceTypeError : public std::exception {
+        virtual const char *what() const noexcept override;
+    };
 
-enum SentenceType {
-    GGA_TYPE = 0,
-    VTG_TYPE,
-    GSV_TYPE,
-    GLL_TYPE,
-    ZDA_TYPE,
-    TXT_TYPE,
-    RMC_TYPE,
-    GSA_TYPE
-};
+    class NoMatchingSentenceTypeError : public std::exception {
+        virtual const char *what() const noexcept override;
+    };
 
-string SentenceTypeToString(SentenceType t);
+    enum SentenceType {
+        GGA_TYPE = 0,
+        VTG_TYPE,
+        GSV_TYPE,
+        GLL_TYPE,
+        ZDA_TYPE,
+        TXT_TYPE,
+        RMC_TYPE,
+        GSA_TYPE
+    };
 
-SentenceType StringToSentenceType(string s);
+    string SentenceTypeToString(SentenceType t);
 
-class InvalidSentenceError : public std::exception {
-    virtual const char *what() const noexcept override;
-};
+    SentenceType StringToSentenceType(string s);
 
-class GGA {
-public:
-    GGA(const string &s);
-    SentenceType Type;
-    string Talker;
-    string Time;
-    double Latitude;
-    string NorthSouthIndicator;
-    double Longitude;
-    string EastWestIndicator;
-    string QualityIndicator;
-    int NumberOfSatellitesUsed;
-    double HDOP;
-    double Altitude;
-    double GeoIDSeparation;
-    int64_t DifferentialAge;
-    int DifferentialStationID;
-};
+    class InvalidSentenceError : public std::exception {
+        virtual const char *what() const noexcept override;
+    };
 
-class SatelliteInfo {
-public:
-    SatelliteInfo(const string &s);
+    class GGA {
+    public:
+        GGA(const string &s);
+        SentenceType Type;
+        string Talker;
+        string Time;
+        double Latitude;
+        string NorthSouthIndicator;
+        double Longitude;
+        string EastWestIndicator;
+        string QualityIndicator;
+        int NumberOfSatellitesUsed;
+        double HDOP;
+        double Altitude;
+        double GeoIDSeparation;
+        int64_t DifferentialAge;
+        int DifferentialStationID;
+    };
 
-    // satellite ID
-    int SatelliteID;
-    // elecation (0-90 degrees)
-    int Elevation;
-    // azimuth (0-359 degrees)
-    int Azimuth;
-    // signal stength (0-99 dBH)
-    int SignalStrength;
-};
+    class SatelliteInfo {
+    public:
+        SatelliteInfo(const string &s);
 
-class GSV {
-public:
-    GSV(const string &s);
-    SentenceType Type;
-    string Talker;
-    int NumberOfMessages;
-    int MessageNumber;
-    int NumberOfSatellites;
-    int SignalID;
-    SatelliteInfo SatelliteInfos[];
-};
+        // satellite ID
+        int SatelliteID;
+        // elecation (0-90 degrees)
+        int Elevation;
+        // azimuth (0-359 degrees)
+        int Azimuth;
+        // signal stength (0-99 dBH)
+        int SignalStrength;
+    };
 
-class NeoM8N {
-public:
-    NeoM8N(const std::string &device);
+    class GSV {
+    public:
+        GSV(const string &s);
+        SentenceType Type;
+        string Talker;
+        int NumberOfMessages;
+        int MessageNumber;
+        int NumberOfSatellites;
+        int SignalID;
+        SatelliteInfo SatelliteInfos[];
+    };
 
-    ~NeoM8N();
+    class NeoM8N {
+    public:
+        NeoM8N(const std::string &device);
 
-    void RegisterCallback(const std::string &key, GPSCallback cb);
+        ~NeoM8N();
 
-    void UnregisterCallback(const std::string &key);
+        void RegisterCallback(const std::string &key, GPSCallback cb);
 
-    void Read();
+        void UnregisterCallback(const std::string &key);
 
-private:
-    int fd;
-    std::map<std::string, GPSCallback> cbs;
-    struct termios oldPortSettings{}, newPortSettings{};
-    bool reading;
-};
+        void Read();
+
+    private:
+        int fd;
+        std::map<std::string, GPSCallback> cbs;
+        struct termios oldPortSettings{}, newPortSettings{};
+        bool reading;
+    };
+}
 
 
 #endif //NEOM8N_NEOM8N_H
