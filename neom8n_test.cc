@@ -7,10 +7,20 @@
 #include "neom8n.h"
 
 TEST_CASE("get sentence type") {
-    SECTION("GGA sentence type - valid") {
+    SECTION("GSV sentence type - valid") {
         try {
-            auto t = neom8n::GetSentenceType("$GNGGA,074332.000,2606.1722,S,02759.6365,E,1,05,3.0,1577.4,M,0.0,M,,*53");
-            REQUIRE(t == neom8n::GGA_TYPE);
+            auto t = neom8n::GetSentenceType("$GPGSV,3,3,11,22,34,124,26,28,87,220,,30,22,332,10*48");
+            REQUIRE(t == neom8n::GSV_TYPE);
+        } catch (const neom8n::InvalidSentenceError &e) {
+            FAIL("valid sentence");
+        } catch (const neom8n::NoMatchingSentenceTypeError &e) {
+            FAIL("valid/supported type");
+        }
+    }
+    SECTION("GSV sentence type - valid (with newline)") {
+        try {
+            auto t = neom8n::GetSentenceType("$GPGSV,3,3,11,22,34,124,26,28,87,220,,30,22,332,10*48\n");
+            REQUIRE(t == neom8n::GSV_TYPE);
         } catch (const neom8n::InvalidSentenceError &e) {
             FAIL("valid sentence");
         } catch (const neom8n::NoMatchingSentenceTypeError &e) {
@@ -43,6 +53,25 @@ TEST_CASE( "parse GGA sentence" ) {
     SECTION("valid sentence") {
         try {
             auto gga = neom8n::GGA("$GNGGA,074332.000,2606.1722,S,02759.6365,E,1,05,3.0,1577.4,M,0.0,M,,*53");
+            REQUIRE(gga.Type == neom8n::GGA_TYPE);
+            REQUIRE(gga.Talker == "GN");
+            REQUIRE(gga.Time == "074332.000");
+            REQUIRE(gga.Latitude == 2606.1722);
+            REQUIRE(gga.NorthSouthIndicator == "S");
+            REQUIRE(gga.Longitude == 2759.6365);
+            REQUIRE(gga.EastWestIndicator == "E");
+            REQUIRE(gga.QualityIndicator == "1");
+            REQUIRE(gga.NumberOfSatellitesUsed == 5);
+            REQUIRE(gga.HDOP == 3.0);
+            REQUIRE(gga.Altitude == 1577.4);
+            REQUIRE(gga.GeoIDSeparation == 0.0);
+        } catch (const neom8n::InvalidSentenceError &e) {
+            FAIL("must be able to parse a valid sentence");
+        }
+    }
+    SECTION("valid sentenc (with newline)") {
+        try {
+            auto gga = neom8n::GGA("$GNGGA,074332.000,2606.1722,S,02759.6365,E,1,05,3.0,1577.4,M,0.0,M,,*53\n");
             REQUIRE(gga.Type == neom8n::GGA_TYPE);
             REQUIRE(gga.Talker == "GN");
             REQUIRE(gga.Time == "074332.000");

@@ -135,6 +135,20 @@ namespace neom8n {
         close(fd);
     }
 
+    std::string &ltrim(std::string &str, const std::string &chars = "\t\n\v\f\r ") {
+        str.erase(0, str.find_first_not_of(chars));
+        return str;
+    }
+
+    std::string &rtrim(std::string &str, const std::string &chars = "\t\n\v\f\r ") {
+        str.erase(str.find_last_not_of(chars) + 1);
+        return str;
+    }
+
+    std::string &trim(std::string &str, const std::string &chars = "\t\n\v\f\r ") {
+        return ltrim(rtrim(str, chars), chars);
+    }
+
     string getMatch(string m) {
         if (string(m).empty()) throw InvalidSentenceError();
         return m;
@@ -148,9 +162,11 @@ namespace neom8n {
 
     }
 
-    GGA::GGA(const string &s) {
+    GGA::GGA(const string &sentence) {
         std::regex r(GGA_REGEX);
         std::smatch match;
+        auto s = sentence;
+        trim(s);
         if (std::regex_search(s, match, r)) {
             if (match.size() != 14) {
                 throw InvalidSentenceError();
@@ -205,7 +221,7 @@ namespace neom8n {
         }
     }
 
-    SentenceType StringToSentenceType(string s) {
+    SentenceType StringToSentenceType(const string &s) {
         if (s == "GGA") {
             return GGA_TYPE;
         } else if (s == "VTG") {
@@ -226,9 +242,11 @@ namespace neom8n {
         throw NoMatchingSentenceTypeError();
     }
 
-    SentenceType GetSentenceType(const string& s) {
+    SentenceType GetSentenceType(const string &sentence) {
         std::regex r(TYPE_REGEX);
         std::smatch match;
+        auto s = sentence;
+        trim(s);
         if (std::regex_search(s, match, r)) {
             if (match.size() != 2) {
                 throw InvalidSentenceError();
