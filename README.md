@@ -1,4 +1,4 @@
-Neo M8N GPS Reveiver - C++ Library
+Neo M8N GPS Receiver - C++ Library
 ==================================
 
 Although this library should technically work on any POSIX operating system, 

@@ -53,8 +53,8 @@ namespace neom8n {
     };
 
     string SentenceTypeToString(SentenceType t);
-
     SentenceType StringToSentenceType(string s);
+    SentenceType GetSentenceType(const string& s);
 
     class InvalidSentenceError : public std::exception {
         virtual const char *what() const noexcept override;

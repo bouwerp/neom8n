@@ -152,7 +152,6 @@ namespace neom8n {
         std::regex r(GGA_REGEX);
         std::smatch match;
         if (std::regex_search(s, match, r)) {
-            auto n_matches = match.size();
             if (match.size() != 14) {
                 throw InvalidSentenceError();
             }
@@ -225,5 +224,16 @@ namespace neom8n {
             return GSA_TYPE;
         }
         throw NoMatchingSentenceTypeError();
+    }
+
+    SentenceType GetSentenceType(const string& s) {
+        std::regex r(TYPE_REGEX);
+        std::smatch match;
+        if (std::regex_search(s, match, r)) {
+            if (match.size() != 2) {
+                throw InvalidSentenceError();
+            }
+        }
+        return StringToSentenceType(getMatch(match[1]));
     }
 }
