@@ -13,21 +13,9 @@
 #include <cstdio>
 #include <unistd.h>
 
-typedef std::function<void(char *data)> GPSCallback;
+using std::string;
 
-class NeoM8N {
-public:
-    NeoM8N(const std::string& device);
-    ~NeoM8N();
-    void RegisterCallback(const std::string& key, GPSCallback cb);
-    void UnregisterCallback(const std::string& key);
-    void Read();
-private:
-    int fd;
-    std::map<std::string, GPSCallback> cbs;
-    struct termios oldPortSettings{}, newPortSettings{};
-    bool reading;
-};
+typedef std::function<void(char *data)> GPSCallback;
 
 #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
 #define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
@@ -41,5 +29,84 @@ private:
 #define RMC_REGEX "[$]([A-Z]{2})RMC,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([VA]),([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]{2}[0-9]{2}[0-9]{2})*,,,([NEAD])*(?:,([AV]))*[*][0-9A-Fa-f]+$"
 #define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
 #define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
+
+class Sentence {
+    string Type;
+    string Talker;
+};
+
+class GGA : Sentence {
+    GGA(string s);
+    // time (hhmmss.ss)
+    string Time;
+    // latitude (degrees and minutes - ddmm.mmmmm)
+    double Latitude;
+    // north/south indicator
+    string NorthSouthIndicator;
+    // longitude (degrees and minutes - ddmm.mmmmm)
+    double longitude;
+    // east/west indicator
+    string EastWestIndicator;
+    // quality
+    string QualityIndicator;
+    // number of satellites used (nn, e.g. 00, 03, 11)
+    int NumberOfSatellitesUsed;
+    // horizontal dilution of precision
+    double HDOP;
+    // altitude above (mean) sea level (meters)
+    double Altitude;
+    // Geo ID separation difference between ellipsoid and mean sea level (meters)
+    double GeoIDSeparation;
+    // age of differential corrections (seconds)
+    int64_t DifferentialAge;
+    // age of station providing differential corrections
+    int DifferentialStationID;
+};
+
+class SatelliteInfo {
+    SatelliteInfo(string s);
+    // satellite ID
+    int SatelliteID;
+    // elecation (0-90 degrees)
+    int Elevation;
+    // azimuth (0-359 degrees)
+    int Azimuth;
+    // signal stength (0-99 dBH)
+    int SignalStrength;
+};
+
+class GSV : Sentence {
+    GSV(string s);
+    // the total number of GSV messages being output (two digits, e.g. 00, 10, 05, ...)
+    int NumberOfMessages;
+    // sequence of this message (of the total - two digits, e.g. 00, 01, ...)
+    int MessageNumber;
+    // number of satellites
+    int NumberOfSatellites;
+    // signal ID
+    int SignalID;
+    // satellite info
+    SatelliteInfo SatelliteInfos[];
+};
+
+class NeoM8N {
+public:
+    NeoM8N(const std::string &device);
+
+    ~NeoM8N();
+
+    void RegisterCallback(const std::string &key, GPSCallback cb);
+
+    void UnregisterCallback(const std::string &key);
+
+    void Read();
+
+private:
+    int fd;
+    std::map<std::string, GPSCallback> cbs;
+    struct termios oldPortSettings{}, newPortSettings{};
+    bool reading;
+};
+
 
 #endif //NEOM8N_NEOM8N_H
