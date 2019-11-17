@@ -27,7 +27,7 @@
 
 #ifdef __clang__
 #   ifdef __ICC // icpc defines the __clang__ macro
-                                                                                                                        #       pragma warning(push)
+#       pragma warning(push)
 #       pragma warning(disable: 161 1682)
 #   else // __ICC
 #       pragma clang diagnostic push
@@ -36,9 +36,9 @@
 #       pragma clang diagnostic ignored "-Wcovered-switch-default"
 #    endif
 #elif defined __GNUC__
-                                                                                                                        // Because REQUIREs trigger GCC's -Wparentheses, and because still
-     // supported version of g++ have only buggy support for _Pragmas,
-     // Wparentheses have to be suppressed globally.
+// Because REQUIREs trigger GCC's -Wparentheses, and because still
+// supported version of g++ have only buggy support for _Pragmas,
+// Wparentheses have to be suppressed globally.
 #    pragma GCC diagnostic ignored "-Wparentheses" // See #674 for details
 
 #    pragma GCC diagnostic push
@@ -77,7 +77,7 @@
 # endif
 
 #elif defined(linux) || defined(__linux) || defined(__linux__)
-                                                                                                                        #  define CATCH_PLATFORM_LINUX
+#  define CATCH_PLATFORM_LINUX
 
 #elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__)
 #  define CATCH_PLATFORM_WINDOWS
@@ -141,7 +141,7 @@ namespace Catch {
 // We have to avoid both ICC and Clang, because they try to mask themselves
 // as gcc, and we want only GCC in this block
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__ICC)
-                                                                                                                        #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "GCC diagnostic push" )
+#    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "GCC diagnostic push" )
 #    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  _Pragma( "GCC diagnostic pop" )
 #endif
 
@@ -299,36 +299,36 @@ namespace Catch {
 
 // Various stdlib support checks that require __has_include
 #if defined(__has_include)
-                                                                                                                        // Check if string_view is available and usable
-  #if __has_include(<string_view>) && defined(CATCH_CPP17_OR_GREATER)
-  #    define CATCH_INTERNAL_CONFIG_CPP17_STRING_VIEW
-  #endif
+// Check if string_view is available and usable
+#if __has_include(<string_view>) && defined(CATCH_CPP17_OR_GREATER)
+#    define CATCH_INTERNAL_CONFIG_CPP17_STRING_VIEW
+#endif
 
-  // Check if optional is available and usable
-  #  if __has_include(<optional>) && defined(CATCH_CPP17_OR_GREATER)
-  #    define CATCH_INTERNAL_CONFIG_CPP17_OPTIONAL
-  #  endif // __has_include(<optional>) && defined(CATCH_CPP17_OR_GREATER)
+// Check if optional is available and usable
+#  if __has_include(<optional>) && defined(CATCH_CPP17_OR_GREATER)
+#    define CATCH_INTERNAL_CONFIG_CPP17_OPTIONAL
+#  endif // __has_include(<optional>) && defined(CATCH_CPP17_OR_GREATER)
 
-  // Check if byte is available and usable
-  #  if __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
-  #    define CATCH_INTERNAL_CONFIG_CPP17_BYTE
-  #  endif // __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
+// Check if byte is available and usable
+#  if __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
+#    define CATCH_INTERNAL_CONFIG_CPP17_BYTE
+#  endif // __has_include(<cstddef>) && defined(CATCH_CPP17_OR_GREATER)
 
-  // Check if variant is available and usable
-  #  if __has_include(<variant>) && defined(CATCH_CPP17_OR_GREATER)
-  #    if defined(__clang__) && (__clang_major__ < 8)
-         // work around clang bug with libstdc++ https://bugs.llvm.org/show_bug.cgi?id=31852
-         // fix should be in clang 8, workaround in libstdc++ 8.2
-  #      include <ciso646>
-  #      if defined(__GLIBCXX__) && defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE < 9)
-  #        define CATCH_CONFIG_NO_CPP17_VARIANT
-  #      else
-  #        define CATCH_INTERNAL_CONFIG_CPP17_VARIANT
-  #      endif // defined(__GLIBCXX__) && defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE < 9)
-  #    else
-  #      define CATCH_INTERNAL_CONFIG_CPP17_VARIANT
-  #    endif // defined(__clang__) && (__clang_major__ < 8)
-  #  endif // __has_include(<variant>) && defined(CATCH_CPP17_OR_GREATER)
+// Check if variant is available and usable
+#  if __has_include(<variant>) && defined(CATCH_CPP17_OR_GREATER)
+#    if defined(__clang__) && (__clang_major__ < 8)
+// work around clang bug with libstdc++ https://bugs.llvm.org/show_bug.cgi?id=31852
+// fix should be in clang 8, workaround in libstdc++ 8.2
+#      include <ciso646>
+#      if defined(__GLIBCXX__) && defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE < 9)
+#        define CATCH_CONFIG_NO_CPP17_VARIANT
+#      else
+#        define CATCH_INTERNAL_CONFIG_CPP17_VARIANT
+#      endif // defined(__GLIBCXX__) && defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE < 9)
+#    else
+#      define CATCH_INTERNAL_CONFIG_CPP17_VARIANT
+#    endif // defined(__clang__) && (__clang_major__ < 8)
+#  endif // __has_include(<variant>) && defined(CATCH_CPP17_OR_GREATER)
 #endif // defined(__has_include)
 
 #if defined(CATCH_INTERNAL_CONFIG_COUNTER) && !defined(CATCH_CONFIG_NO_COUNTER) && !defined(CATCH_CONFIG_COUNTER)
@@ -8336,21 +8336,22 @@ namespace Catch {
 #define CATCH_TRAP() __asm__("int $3\n" : : ) /* NOLINT */
 
 #elif defined(CATCH_PLATFORM_LINUX)
-                                                                                                                        // If we can use inline assembler, do it because this allows us to break
-    // directly at the location of the failing check instead of breaking inside
-    // raise() called from it, i.e. one stack frame below.
-    #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
-        #define CATCH_TRAP() asm volatile ("int $3") /* NOLINT */
-    #else // Fall back to the generic way.
-        #include <signal.h>
+// If we can use inline assembler, do it because this allows us to break
+// directly at the location of the failing check instead of breaking inside
+// raise() called from it, i.e. one stack frame below.
+#if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
+#define CATCH_TRAP() asm volatile ("int $3") /* NOLINT */
+#else // Fall back to the generic way.
 
-        #define CATCH_TRAP() raise(SIGTRAP)
-    #endif
+#include <signal.h>
+
+#define CATCH_TRAP() raise(SIGTRAP)
+#endif
 #elif defined(_MSC_VER)
-    #define CATCH_TRAP() __debugbreak()
+#define CATCH_TRAP() __debugbreak()
 #elif defined(__MINGW32__)
-    extern "C" __declspec(dllimport) void __stdcall DebugBreak();
-    #define CATCH_TRAP() DebugBreak()
+extern "C" __declspec(dllimport) void __stdcall DebugBreak();
+#define CATCH_TRAP() DebugBreak()
 #endif
 
 #ifdef CATCH_TRAP
@@ -10700,9 +10701,9 @@ namespace Catch {
         bool useColourOnPlatform() {
             return
 #ifdef CATCH_PLATFORM_MAC
-                    !isDebuggerActive() &&
-                    #endif
-                    #if !(defined(__DJGPP__) && defined(__STRICT_ANSI__))
+                !isDebuggerActive() &&
+#endif
+#if !(defined(__DJGPP__) && defined(__STRICT_ANSI__))
                     isatty(STDOUT_FILENO)
 #else
                 false
@@ -10947,53 +10948,54 @@ namespace Catch {
 } // namespace Catch
 
 #elif defined(CATCH_PLATFORM_LINUX)
-                                                                                                                        #include <fstream>
-    #include <string>
 
-    namespace Catch{
-        // The standard POSIX way of detecting a debugger is to attempt to
-        // ptrace() the process, but this needs to be done from a child and not
-        // this process itself to still allow attaching to this process later
-        // if wanted, so is rather heavy. Under Linux we have the PID of the
-        // "debugger" (which doesn't need to be gdb, of course, it could also
-        // be strace, for example) in /proc/$PID/status, so just get it from
-        // there instead.
-        bool isDebuggerActive(){
-            // Libstdc++ has a bug, where std::ifstream sets errno to 0
-            // This way our users can properly assert over errno values
-            ErrnoGuard guard;
-            std::ifstream in("/proc/self/status");
-            for( std::string line; std::getline(in, line); ) {
-                static const int PREFIX_LEN = 11;
-                if( line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0 ) {
-                    // We're traced if the PID is not 0 and no other PID starts
-                    // with 0 digit, so it's enough to check for just a single
-                    // character.
-                    return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
-                }
+#include <fstream>
+#include <string>
+
+namespace Catch {
+    // The standard POSIX way of detecting a debugger is to attempt to
+    // ptrace() the process, but this needs to be done from a child and not
+    // this process itself to still allow attaching to this process later
+    // if wanted, so is rather heavy. Under Linux we have the PID of the
+    // "debugger" (which doesn't need to be gdb, of course, it could also
+    // be strace, for example) in /proc/$PID/status, so just get it from
+    // there instead.
+    bool isDebuggerActive() {
+        // Libstdc++ has a bug, where std::ifstream sets errno to 0
+        // This way our users can properly assert over errno values
+        ErrnoGuard guard;
+        std::ifstream in("/proc/self/status");
+        for (std::string line; std::getline(in, line);) {
+            static const int PREFIX_LEN = 11;
+            if (line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
+                // We're traced if the PID is not 0 and no other PID starts
+                // with 0 digit, so it's enough to check for just a single
+                // character.
+                return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
             }
+        }
 
-            return false;
-        }
-    } // namespace Catch
+        return false;
+    }
+} // namespace Catch
 #elif defined(_MSC_VER)
-    extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-    namespace Catch {
-        bool isDebuggerActive() {
-            return IsDebuggerPresent() != 0;
-        }
+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+namespace Catch {
+    bool isDebuggerActive() {
+        return IsDebuggerPresent() != 0;
     }
+}
 #elif defined(__MINGW32__)
-    extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-    namespace Catch {
-        bool isDebuggerActive() {
-            return IsDebuggerPresent() != 0;
-        }
+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+namespace Catch {
+    bool isDebuggerActive() {
+        return IsDebuggerPresent() != 0;
     }
+}
 #else
-    namespace Catch {
-       bool isDebuggerActive() { return false; }
-    }
+namespace Catch {
+   bool isDebuggerActive() { return false; }
+}
 #endif // Platform
 // end catch_debugger.cpp
 // start catch_decomposer.cpp
@@ -12075,7 +12077,7 @@ namespace Catch {
 
 #if defined(__clang__)
 #pragma clang diagnostic push
-// Clang <3.5 reports on the default branch in the switch below
+            // Clang <3.5 reports on the default branch in the switch below
 #pragma clang diagnostic ignored "-Wunreachable-code"
 #endif
 
@@ -12111,12 +12113,12 @@ namespace Catch {
                 if (m_type == FloatingPointKind::Double) {
                     write(ret, step(m_target, static_cast<double>(-INFINITY), m_ulps));
                     ret << ", ";
-                    write(ret, step(m_target, static_cast<double>( INFINITY), m_ulps));
+                    write(ret, step(m_target, static_cast<double>(INFINITY), m_ulps));
                 } else {
                     // We have to cast INFINITY to float because of MinGW, see #1782
                     write(ret, step(static_cast<float>(m_target), static_cast<float>(-INFINITY), m_ulps));
                     ret << ", ";
-                    write(ret, step(static_cast<float>(m_target), static_cast<float>( INFINITY), m_ulps));
+                    write(ret, step(static_cast<float>(m_target), static_cast<float>(INFINITY), m_ulps));
                 }
                 ret << "])";
 
@@ -16268,8 +16270,11 @@ namespace {
     const char *passedString() { return "PASSED"; }
 
 #else
-                                                                                                                            const char* failedString() { return "failed"; }
-    const char* passedString() { return "passed"; }
+
+    const char *failedString() { return "failed"; }
+
+    const char *passedString() { return "passed"; }
+
 #endif
 
     // Colour::LightGrey
