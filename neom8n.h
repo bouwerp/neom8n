@@ -18,7 +18,7 @@ using std::string;
 
 namespace neom8n {
 
-    typedef std::function<void(char *data)> GPSCallback;
+    typedef std::function<void(string data)> GPSCallback;
 
     // todo support checksum validation
 //    #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"

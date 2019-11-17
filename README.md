@@ -21,7 +21,7 @@ be done in a separate thread.
 
 ```cpp
 ...
- neom8n::NeoM8N neoM8N("/dev/ttySC0");
+neom8n::NeoM8N neoM8N("/dev/ttySC0");
 // one or more callbacks can be registered to handle the sentences
 neoM8N.RegisterCallback("process_data", [&](char *data) {
     std::string s(data);

@@ -115,7 +115,7 @@ namespace neom8n {
             buf[res] = 0;
             // execute all callbacks
             for (auto const &v : cbs) {
-                v.second(buf);
+                v.second(std::string(buf));
             }
         }
     }
