@@ -20,7 +20,8 @@ namespace neom8n {
 
     typedef std::function<void(char *data)> GPSCallback;
 
-    #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
+    // todo support checksum validation
+//    #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
     #define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
     #define GGA_REGEX "[$]([A-Z]{2})GGA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0126])*,([0-9]{2}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,M*,([0-9]+[.][0-9]+)*,(.*),(.*)[*][0-9A-Fa-f]+$"
     #define VTG_REGEX "[$]([A-Z]{2})VTG,([0-9]+[.][0-9]+)*,T*,(.*),M*,([0-9]+[.][0-9]+)*,N*,([0-9]+[.][0-9]+)*,K*,([NEAD])*[*][0-9A-Fa-f]+$"
