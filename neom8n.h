@@ -58,15 +58,11 @@ class InvalidSentenceError : public std::exception {
     virtual const char *what() const noexcept override;
 };
 
-class Sentence {
-public:
-    SentenceType Type;
-    string Talker;
-};
-
-class GGA : Sentence {
+class GGA {
 public:
     GGA(const string &s);
+    SentenceType Type;
+    string Talker;
     string Time;
     double Latitude;
     string NorthSouthIndicator;
@@ -95,19 +91,15 @@ public:
     int SignalStrength;
 };
 
-class GSV : Sentence {
+class GSV {
 public:
     GSV(const string &s);
-
-    // the total number of GSV messages being output (two digits, e.g. 00, 10, 05, ...)
+    SentenceType Type;
+    string Talker;
     int NumberOfMessages;
-    // sequence of this message (of the total - two digits, e.g. 00, 01, ...)
     int MessageNumber;
-    // number of satellites
     int NumberOfSatellites;
-    // signal ID
     int SignalID;
-    // satellite info
     SatelliteInfo SatelliteInfos[];
 };
 

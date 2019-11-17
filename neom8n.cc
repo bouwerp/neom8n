@@ -134,6 +134,11 @@ NeoM8N::~NeoM8N() {
     close(fd);
 }
 
+string getMatch(string m) {
+    if (string(m).empty()) throw InvalidSentenceError();
+    return m;
+}
+
 SatelliteInfo::SatelliteInfo(const string& s) {
 
 }
@@ -151,19 +156,17 @@ GGA::GGA(const string& s) {
             throw InvalidSentenceError();
         }
         Type = GGA_TYPE;
-        Talker = match[1];
-        Time = match[2];
-        Latitude = stod(match[3]);
-        NorthSouthIndicator = match[4];
-        Longitude = stod(match[5]);
-        EastWestIndicator = match[6];
-        QualityIndicator = match[7];
-        NumberOfSatellitesUsed = stoi(match[8]);
-        HDOP = stod(match[9]);
-        Altitude = stod(match[10]);
-        GeoIDSeparation = stod(match[11]);
-        DifferentialAge = stoi(match[12]);
-        DifferentialStationID = stoi(match[13]);
+        Talker = getMatch(match[1]);
+        Time = getMatch(match[2]);
+        Latitude = stod(getMatch(match[3]));
+        NorthSouthIndicator = getMatch(match[4]);
+        Longitude = stod(getMatch(match[5]));
+        EastWestIndicator = getMatch(match[6]);
+        QualityIndicator = getMatch(match[7]);
+        NumberOfSatellitesUsed = stoi(getMatch(match[8]));
+        HDOP = stod(getMatch(match[9]));
+        Altitude = stod(getMatch(match[10]));
+        GeoIDSeparation = stod(getMatch(match[11]));
     }
 }
 
