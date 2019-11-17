@@ -22,17 +22,17 @@ namespace neom8n {
 
     // todo support checksum validation
 //    #define CHECKSUM_REGEX "[$](.*)[*]([0-9A-Fa-f]+)$"
-    #define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
-    #define GGA_REGEX "[$]([A-Z]{2})GGA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0126])*,([0-9]{2}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,M*,([0-9]+[.][0-9]+)*,(.*),(.*)[*][0-9A-Fa-f]+$"
-    #define VTG_REGEX "[$]([A-Z]{2})VTG,([0-9]+[.][0-9]+)*,T*,(.*),M*,([0-9]+[.][0-9]+)*,N*,([0-9]+[.][0-9]+)*,K*,([NEAD])*[*][0-9A-Fa-f]+$"
-    #define GSV_REGEX "[$]([A-Z]{2})GSV,([0-9]+)*,([0-9]+)*,([0-9]+)*((?:,[0-9]+,[0-9]*,[0-9]*,[0-9]*){0,4})(?:,([0-9]*))*[*][0-9A-Fa-f]+$"
-    #define GSV_SATELLITE_DATA_REGEX ",([0-9]+)*,([0-9]+)*,([0-9]+)*,([0-9]*)*"
-    #define GLL_REGEX "[$]([A-Z]{2})GLL,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([AV])*,([NEAD])*[*][0-9A-Fa-f]+$"
-    #define ZDA_REGEX "[$]([A-Z]{2})ZDA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]{2})*,([0-9]{2})*,([0-9]{4})*,([-]*[0-9]{2})*,([0-9]{2})*[*][0-9A-Fa-f]+$"
-    #define TXT_REGEX "[$]([A-Z]{2})TXT,([0-9][0-9])*,([0-9][0-9])*,([0-9][0-9])*,(.*)[*][0-9A-Fa-f]+$"
-    #define RMC_REGEX "[$]([A-Z]{2})RMC,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([VA]),([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]{2}[0-9]{2}[0-9]{2})*,,,([NEAD])*(?:,([AV]))*[*][0-9A-Fa-f]+$"
-    #define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
-    #define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
+#define TYPE_REGEX "[$][A-Z]{2}([A-Z]{3}).*[*][0-9A-Fa-f]+$"
+#define GGA_REGEX "[$]([A-Z]{2})GGA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0126])*,([0-9]{2}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,M*,([0-9]+[.][0-9]+)*,(.*),(.*)[*][0-9A-Fa-f]+$"
+#define GSV_REGEX "[$]([A-Z]{2})GSV,([0-9]+)*,([0-9]+)*,([0-9]+)*((?:,[0-9]+,[0-9]*,[0-9]*,[0-9]*){0,4})(?:,([0-9]*))*[*][0-9A-Fa-f]+$"
+#define GSV_SATELLITE_INFO_REGEX ",([0-9]+)+,([0-9]+)+,([0-9]+)+,([0-9]+)*"
+#define ZDA_REGEX "[$]([A-Z]{2})ZDA,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([0-9]{2})*,([0-9]{2})*,([0-9]{4})*,([-]*[0-9]{2})*,([0-9]{2})*[*][0-9A-Fa-f]+$"
+#define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
+#define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
+#define VTG_REGEX "[$]([A-Z]{2})VTG,([0-9]+[.][0-9]+)*,T*,(.*),M*,([0-9]+[.][0-9]+)*,N*,([0-9]+[.][0-9]+)*,K*,([NEAD])*[*][0-9A-Fa-f]+$"
+#define GLL_REGEX "[$]([A-Z]{2})GLL,([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([AV])*,([NEAD])*[*][0-9A-Fa-f]+$"
+#define TXT_REGEX "[$]([A-Z]{2})TXT,([0-9][0-9])*,([0-9][0-9])*,([0-9][0-9])*,(.*)[*][0-9A-Fa-f]+$"
+#define RMC_REGEX "[$]([A-Z]{2})RMC,([0-9]{2}[0-9]{2}[0-9]{2}[.][0-9]+)*,([VA]),([0-9]+[.][0-9]+)*,([NS])*,([0-9]+[.][0-9]+)*,([EW])*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]{2}[0-9]{2}[0-9]{2})*,,,([NEAD])*(?:,([AV]))*[*][0-9A-Fa-f]+$"
 
     class InvalidSentenceTypeError : public std::exception {
         virtual const char *what() const noexcept override;
@@ -54,8 +54,10 @@ namespace neom8n {
     };
 
     string SentenceTypeToString(SentenceType t);
+
     SentenceType StringToSentenceType(const string &s);
-    SentenceType GetSentenceType(const string& s);
+
+    SentenceType GetSentenceType(const string &s);
 
     class InvalidSentenceError : public std::exception {
         virtual const char *what() const noexcept override;
@@ -64,6 +66,7 @@ namespace neom8n {
     class GGA {
     public:
         GGA(const string &s);
+
         SentenceType Type;
         string Talker;
         string Time;
@@ -76,34 +79,29 @@ namespace neom8n {
         double HDOP;
         double Altitude;
         double GeoIDSeparation;
-        int64_t DifferentialAge;
-        int DifferentialStationID;
     };
 
     class SatelliteInfo {
     public:
         SatelliteInfo(const string &s);
 
-        // satellite ID
         int SatelliteID;
-        // elecation (0-90 degrees)
-        int Elevation;
-        // azimuth (0-359 degrees)
-        int Azimuth;
-        // signal stength (0-99 dBH)
-        int SignalStrength;
+        int Elevation; // 0-90 degrees
+        int Azimuth; // 0-359 degrees
+        int SignalStrength; // 0-99 dBH
     };
 
     class GSV {
     public:
         GSV(const string &s);
+
         SentenceType Type;
         string Talker;
         int NumberOfMessages;
         int MessageNumber;
         int NumberOfSatellites;
         int SignalID;
-        SatelliteInfo SatelliteInfos[];
+        std::vector<SatelliteInfo> SatelliteInfos;
     };
 
     class NeoM8N {
@@ -114,7 +112,7 @@ namespace neom8n {
 
         void RegisterCallback(const std::string &key, GPSCallback cb);
 
-        void UnregisterCallback(const std::string &key);
+        void DeregisterCallback(const std::string &key);
 
         void Read();
 

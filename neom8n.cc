@@ -22,10 +22,8 @@ namespace neom8n {
         }
         tcgetattr(fd, &oldPortSettings); /* save current serial port settings */
         bzero(&newPortSettings, sizeof(newPortSettings)); /* clear struct for new port settings */
-
-        int flags = fcntl(fd, F_GETFL, 0);
+        fcntl(fd, F_GETFL, 0);
         fcntl(fd, F_SETFL, O_NONBLOCK);
-
         /*
            BAUDRATE: Set bps rate. You could also use cfsetispeed and cfsetospeed.
            CRTSCTS : output hardware flow control (only used if the cable has
@@ -35,7 +33,6 @@ namespace neom8n {
            CREAD   : enable receiving characters
          */
         newPortSettings.c_cflag = B9600 | CRTSCTS | CS8 | CLOCAL | CREAD;
-
         /*
           IGNPAR  : ignore bytes with parity errors
           ICRNL   : map CR to NL (otherwise a CR input on the other computer
@@ -43,18 +40,15 @@ namespace neom8n {
           otherwise make device raw (no other input processing)
         */
         newPortSettings.c_iflag = IGNPAR | ICRNL;
-
         /*
          Raw output.
         */
         newPortSettings.c_oflag = 0;
-
         /*
           ICANON  : enable canonical input
           disable all echo functionality, and don't send signals to calling program
         */
         newPortSettings.c_lflag = ICANON;
-
         /*
           initialize all control characters
           default values can be found in /usr/include/termios.h, and are given
@@ -77,7 +71,6 @@ namespace neom8n {
         newPortSettings.c_cc[VWERASE] = 0;     /* Ctrl-w */
         newPortSettings.c_cc[VLNEXT] = 0;     /* Ctrl-v */
         newPortSettings.c_cc[VEOL2] = 0;     /* '\0' */
-
         /*
           now clean the modem line and activate the settings for the port
         */
@@ -89,7 +82,7 @@ namespace neom8n {
         cbs.insert_or_assign(key, cb);
     }
 
-    void NeoM8N::UnregisterCallback(const std::string &key) {
+    void NeoM8N::DeregisterCallback(const std::string &key) {
         cbs.erase(key);
     }
 
@@ -120,6 +113,7 @@ namespace neom8n {
             }
             /* set end of string, so we can printf */
             buf[res] = 0;
+            // execute all callbacks
             for (auto const &v : cbs) {
                 v.second(buf);
             }
@@ -155,11 +149,42 @@ namespace neom8n {
     }
 
     SatelliteInfo::SatelliteInfo(const string &s) {
-
+        std::regex r(GSV_SATELLITE_INFO_REGEX);
+        std::smatch sat_info_match;
+        if (std::regex_search(s, sat_info_match, r)) {
+            SatelliteID = stoi(getMatch(sat_info_match[1]));
+            Elevation = stoi(getMatch(sat_info_match[2]));
+            Azimuth = stoi(getMatch(sat_info_match[3]));
+            std::string(sat_info_match[4]).empty() ?
+                    SignalStrength = -1 :
+                    SignalStrength = stoi(sat_info_match[4]);
+        }
     }
 
-    GSV::GSV(const string &s) {
-
+    GSV::GSV(const string &sentence) {
+        std::regex r(GSV_REGEX);
+        std::smatch match;
+        auto s = sentence;
+        trim(s);
+        if (std::regex_search(s, match, r)) {
+            if (match.size() != 7) {
+                throw InvalidSentenceError();
+            }
+            Type = GSV_TYPE;
+            Talker = getMatch(match[1]);
+            NumberOfMessages = stoi(getMatch(match[2]));
+            MessageNumber = stoi(getMatch(match[3]));
+            NumberOfSatellites = stoi(getMatch(match[4]));
+            auto all_sat_infos = getMatch(match[5]);
+            std::regex gsv_sat_info(",([0-9]+),([0-9]+),([0-9]+),([0-9]+)*");
+            std::smatch sub_match;
+            string::const_iterator searchStart(all_sat_infos.cbegin());
+            while (regex_search(searchStart, all_sat_infos.cend(), sub_match, gsv_sat_info)) {
+                searchStart = sub_match.suffix().first;
+                auto sat_info_str = std::string(sub_match[0]);
+                SatelliteInfos.emplace_back(sat_info_str);
+            }
+        }
     }
 
     GGA::GGA(const string &sentence) {
@@ -221,6 +246,11 @@ namespace neom8n {
         }
     }
 
+    /**
+     * StringToSentenceType converts a string into an equivalnet sentence type.
+     * @param s the string referring to a type
+     * @return the enumerated type represented by the string
+     */
     SentenceType StringToSentenceType(const string &s) {
         if (s == "GGA") {
             return GGA_TYPE;
