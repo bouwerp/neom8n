@@ -22,37 +22,37 @@ be done in a separate thread.
 ```cpp
 ...
  neom8n::NeoM8N neoM8N("/dev/ttySC0");
-    // one or more callbacks can be registered to handle the sentences
-    neoM8N.RegisterCallback("process_data", [&](char *data) {
-        std::string s(data);
-        try {
-            auto type = neom8n::GetSentenceType(s);
-            switch (type) {
-                case neom8n::GGA_TYPE: {
-                    auto gga = neom8n::GGA(s);
-                    cout << "Lat: " << gga.Latitude << gga.NorthSouthIndicator << endl;
-                    cout << "Lon: " << gga.Longitude << gga.EastWestIndicator << endl;
-                    break;
-                }
-                case neom8n::GSV_TYPE: {
-                    auto gsv = neom8n::GSV(s);
-                    cout << "Message #" << gsv.MessageNumber << " of " << gsv.NumberOfMessages << endl;
-                    cout << "Number of satellites: " << gsv.NumberOfSatellites << endl;
-                    break;
-                }
-                default: {
-                    cerr << "type '" << neom8n::SentenceTypeToString(type) << "' not supported yet" << endl;
-                    break;
-                }
+// one or more callbacks can be registered to handle the sentences
+neoM8N.RegisterCallback("process_data", [&](char *data) {
+    std::string s(data);
+    try {
+        auto type = neom8n::GetSentenceType(s);
+        switch (type) {
+            case neom8n::GGA_TYPE: {
+                auto gga = neom8n::GGA(s);
+                cout << "Lat: " << gga.Latitude << gga.NorthSouthIndicator << endl;
+                cout << "Lon: " << gga.Longitude << gga.EastWestIndicator << endl;
+                break;
             }
-        } catch (const exception &e) {
-            cerr << "could not determine sentence type: " << e.what() << endl;
-            cerr << "SENTENCE: " << s << endl;
+            case neom8n::GSV_TYPE: {
+                auto gsv = neom8n::GSV(s);
+                cout << "Message #" << gsv.MessageNumber << " of " << gsv.NumberOfMessages << endl;
+                cout << "Number of satellites: " << gsv.NumberOfSatellites << endl;
+                break;
+            }
+            default: {
+                cerr << "type '" << neom8n::SentenceTypeToString(type) << "' not supported yet" << endl;
+                break;
+            }
         }
-    });
-    
-    // execute the blocking read function in a separate thread
-    std::thread gpsThread([](neom8n::NeoM8N *neoM8N) -> void {
-        neoM8N->Read();
-    }, &neoM8N);
+    } catch (const exception &e) {
+        cerr << "could not determine sentence type: " << e.what() << endl;
+        cerr << "SENTENCE: " << s << endl;
+    }
+});
+
+// execute the blocking read function in a separate thread
+std::thread gpsThread([](neom8n::NeoM8N *neoM8N) -> void {
+    neoM8N->Read();
+}, &neoM8N);
 ```
