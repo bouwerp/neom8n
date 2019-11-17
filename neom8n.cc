@@ -66,7 +66,7 @@ NeoM8N::NeoM8N(const std::string &device) {
     newPortSettings.c_cc[VEOF] = 4;     /* Ctrl-d */
     newPortSettings.c_cc[VTIME] = 0;     /* inter-character timer unused */
     newPortSettings.c_cc[VMIN] = 1;     /* blocking read until 1 character arrives */
-    newPortSettings.c_cc[VSWTC] = 0;     /* '\0' */
+    newPortSettings.c_cc[/*VSWTC*/7] = 0;     /* '\0' */
     newPortSettings.c_cc[VSTART] = 0;     /* Ctrl-q */
     newPortSettings.c_cc[VSTOP] = 0;     /* Ctrl-s */
     newPortSettings.c_cc[VSUSP] = 0;     /* Ctrl-z */
@@ -134,14 +134,91 @@ NeoM8N::~NeoM8N() {
     close(fd);
 }
 
-SatelliteInfo::SatelliteInfo(string s) {
+SatelliteInfo::SatelliteInfo(const string& s) {
 
 }
 
-GSV::GSV(string s) {
+GSV::GSV(const string& s) {
 
 }
 
-GGA::GGA(string s) {
+GGA::GGA(const string& s) {
+    std::regex r(GGA_REGEX);
+    std::smatch match;
+    if (std::regex_search(s, match, r)) {
+        auto n_matches = match.size();
+        if (match.size() != 14) {
+            throw InvalidSentenceError();
+        }
+        Type = GGA_TYPE;
+        Talker = match[1];
+        Time = match[2];
+        Latitude = stod(match[3]);
+        NorthSouthIndicator = match[4];
+        Longitude = stod(match[5]);
+        EastWestIndicator = match[6];
+        QualityIndicator = match[7];
+        NumberOfSatellitesUsed = stoi(match[8]);
+        HDOP = stod(match[9]);
+        Altitude = stod(match[10]);
+        GeoIDSeparation = stod(match[11]);
+        DifferentialAge = stoi(match[12]);
+        DifferentialStationID = stoi(match[13]);
+    }
+}
 
+const char *InvalidSentenceError::what() const noexcept {
+    return "the provided sentence has an invalid format for the specified type";
+}
+
+const char *InvalidSentenceTypeError::what() const noexcept {
+    return "invalid sentence type - must be one of: GGA(0), VTG(1), GSV(2), GLL(3), ZDA(3), TXT(5), RMC(6), GSA(7)";
+}
+
+const char *NoMatchingSentenceTypeError::what() const noexcept {
+    return "no matching sentence type for the string provided";
+}
+
+string SentenceTypeToString(SentenceType t) {
+    switch (t) {
+        case GGA_TYPE:
+            return "GGA";
+        case VTG_TYPE:
+            return "VTG";
+        case GSV_TYPE:
+            return "GSV";
+        case GLL_TYPE:
+            return "GLL";
+        case ZDA_TYPE:
+            return "ZDA";
+        case TXT_TYPE:
+            return "TXT";
+        case RMC_TYPE:
+            return "RMC";
+        case GSA_TYPE:
+            return "GSA";
+        default:
+            throw InvalidSentenceTypeError();
+    }
+}
+
+SentenceType StringToSentenceType(string s) {
+    if (s == "GGA") {
+        return GGA_TYPE;
+    } else if (s == "VTG") {
+        return VTG_TYPE;
+    } else if (s == "GSV") {
+        return GSV_TYPE;
+    } else if (s == "GLL") {
+        return GLL_TYPE;
+    } else if (s == "ZDA") {
+        return ZDA_TYPE;
+    } else if (s == "TXT") {
+        return TXT_TYPE;
+    } else if (s == "RMC") {
+        return RMC_TYPE;
+    } else if (s == "GSA") {
+        return GSA_TYPE;
+    }
+    throw NoMatchingSentenceTypeError();
 }

@@ -12,6 +12,7 @@
 #include <termios.h>
 #include <cstdio>
 #include <unistd.h>
+#include <regex>
 
 using std::string;
 
@@ -30,41 +31,60 @@ typedef std::function<void(char *data)> GPSCallback;
 #define GSA_REGEX "[$]([A-Z]{2})GSA,([MA])*,([123])*((?:,[0-9]*){0,12}),([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*,([0-9]+[.][0-9]+)*(?:,([0-9]+))*[*][0-9A-Fa-f]+$"
 #define GSA_SATELLITE_IDS_REGEX ",([0-9]+)*"
 
+class InvalidSentenceTypeError : public std::exception {
+    virtual const char *what() const noexcept override;
+};
+
+class NoMatchingSentenceTypeError : public std::exception {
+    virtual const char *what() const noexcept override;
+};
+
+enum SentenceType {
+    GGA_TYPE = 0,
+    VTG_TYPE,
+    GSV_TYPE,
+    GLL_TYPE,
+    ZDA_TYPE,
+    TXT_TYPE,
+    RMC_TYPE,
+    GSA_TYPE
+};
+
+string SentenceTypeToString(SentenceType t);
+
+SentenceType StringToSentenceType(string s);
+
+class InvalidSentenceError : public std::exception {
+    virtual const char *what() const noexcept override;
+};
+
 class Sentence {
-    string Type;
+public:
+    SentenceType Type;
     string Talker;
 };
 
 class GGA : Sentence {
-    GGA(string s);
-    // time (hhmmss.ss)
+public:
+    GGA(const string &s);
     string Time;
-    // latitude (degrees and minutes - ddmm.mmmmm)
     double Latitude;
-    // north/south indicator
     string NorthSouthIndicator;
-    // longitude (degrees and minutes - ddmm.mmmmm)
-    double longitude;
-    // east/west indicator
+    double Longitude;
     string EastWestIndicator;
-    // quality
     string QualityIndicator;
-    // number of satellites used (nn, e.g. 00, 03, 11)
     int NumberOfSatellitesUsed;
-    // horizontal dilution of precision
     double HDOP;
-    // altitude above (mean) sea level (meters)
     double Altitude;
-    // Geo ID separation difference between ellipsoid and mean sea level (meters)
     double GeoIDSeparation;
-    // age of differential corrections (seconds)
     int64_t DifferentialAge;
-    // age of station providing differential corrections
     int DifferentialStationID;
 };
 
 class SatelliteInfo {
-    SatelliteInfo(string s);
+public:
+    SatelliteInfo(const string &s);
+
     // satellite ID
     int SatelliteID;
     // elecation (0-90 degrees)
@@ -76,7 +96,9 @@ class SatelliteInfo {
 };
 
 class GSV : Sentence {
-    GSV(string s);
+public:
+    GSV(const string &s);
+
     // the total number of GSV messages being output (two digits, e.g. 00, 10, 05, ...)
     int NumberOfMessages;
     // sequence of this message (of the total - two digits, e.g. 00, 01, ...)
