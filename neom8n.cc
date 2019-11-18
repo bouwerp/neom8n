@@ -152,12 +152,12 @@ namespace neom8n {
         std::regex r(GSV_SATELLITE_INFO_REGEX);
         std::smatch sat_info_match;
         if (std::regex_search(s, sat_info_match, r)) {
-            SatelliteID = stoi(getMatch(sat_info_match[1]));
-            Elevation = stoi(getMatch(sat_info_match[2]));
-            Azimuth = stoi(getMatch(sat_info_match[3]));
+            SatelliteID = getMatch(sat_info_match[1]);
+            Elevation = getMatch(sat_info_match[2]);
+            Azimuth = getMatch(sat_info_match[3]);
             std::string(sat_info_match[4]).empty() ?
-                    SignalStrength = -1 :
-                    SignalStrength = stoi(sat_info_match[4]);
+                    SignalStrength = "" :
+                    SignalStrength = sat_info_match[4];
         }
     }
 
@@ -172,9 +172,9 @@ namespace neom8n {
             }
             Type = GSV_TYPE;
             Talker = getMatch(match[1]);
-            NumberOfMessages = stoi(getMatch(match[2]));
-            MessageNumber = stoi(getMatch(match[3]));
-            NumberOfSatellites = stoi(getMatch(match[4]));
+            NumberOfMessages = getMatch(match[2]);
+            MessageNumber = getMatch(match[3]);
+            NumberOfSatellites = getMatch(match[4]);
             auto all_sat_infos = getMatch(match[5]);
             std::regex gsv_sat_info(",([0-9]+),([0-9]+),([0-9]+),([0-9]+)*");
             std::smatch sub_match;
@@ -190,7 +190,7 @@ namespace neom8n {
     GGA::GGA(const string &sentence) {
         std::regex r(GGA_REGEX);
         std::smatch match;
-        auto s = sentence;
+        auto s = std::string(sentence);
         trim(s);
         if (std::regex_search(s, match, r)) {
             if (match.size() != 14) {
@@ -199,15 +199,15 @@ namespace neom8n {
             Type = GGA_TYPE;
             Talker = getMatch(match[1]);
             Time = getMatch(match[2]);
-            Latitude = stod(getMatch(match[3]));
+            Latitude =getMatch(match[3]);
             NorthSouthIndicator = getMatch(match[4]);
-            Longitude = stod(getMatch(match[5]));
+            Longitude = getMatch(match[5]);
             EastWestIndicator = getMatch(match[6]);
             QualityIndicator = getMatch(match[7]);
-            NumberOfSatellitesUsed = stoi(getMatch(match[8]));
-            HDOP = stod(getMatch(match[9]));
-            Altitude = stod(getMatch(match[10]));
-            GeoIDSeparation = stod(getMatch(match[11]));
+            NumberOfSatellitesUsed = getMatch(match[8]);
+            HDOP = getMatch(match[9]);
+            Altitude = getMatch(match[10]);
+            GeoIDSeparation = getMatch(match[11]);
         }
     }
 

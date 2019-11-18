@@ -70,25 +70,25 @@ namespace neom8n {
         SentenceType Type;
         string Talker;
         string Time;
-        double Latitude;
+        string Latitude;
         string NorthSouthIndicator;
-        double Longitude;
+        string Longitude;
         string EastWestIndicator;
         string QualityIndicator;
-        int NumberOfSatellitesUsed;
-        double HDOP;
-        double Altitude;
-        double GeoIDSeparation;
+        string NumberOfSatellitesUsed;
+        string HDOP;
+        string Altitude;
+        string GeoIDSeparation;
     };
 
     class SatelliteInfo {
     public:
         SatelliteInfo(const string &s);
 
-        int SatelliteID;
-        int Elevation; // 0-90 degrees
-        int Azimuth; // 0-359 degrees
-        int SignalStrength; // 0-99 dBH
+        string SatelliteID;
+        string Elevation; // 0-90 degrees
+        string Azimuth; // 0-359 degrees
+        string SignalStrength; // 0-99 dBH
     };
 
     class GSV {
@@ -97,10 +97,9 @@ namespace neom8n {
 
         SentenceType Type;
         string Talker;
-        int NumberOfMessages;
-        int MessageNumber;
-        int NumberOfSatellites;
-        int SignalID;
+        string NumberOfMessages;
+        string MessageNumber;
+        string NumberOfSatellites;
         std::vector<SatelliteInfo> SatelliteInfos;
     };
 
