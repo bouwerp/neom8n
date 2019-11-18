@@ -56,3 +56,26 @@ std::thread gpsThread([](neom8n::NeoM8N *neoM8N) -> void {
     neoM8N->Read();
 }, &neoM8N);
 ```
+# Running the unit tests
+
+The [Catch2](https://github.com/catchorg/Catch2) unit testing framework is utilised in
+this library. The header file is included as part of the source.
+
+The test executable must first be compiled:
+```cpp
+cmake -DCMAKE_BUILD_TYPE=Debug ./
+make -j 16
+``` 
+
+Then to run the test:
+```cpp
+./neom8n_test
+```
+
+# Building the library
+
+Assuming the library will be cross compiled for another architecture:
+```c++
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_TOOLCHAIN_FILE> --target neom8n ../
+make -j 16
+```
